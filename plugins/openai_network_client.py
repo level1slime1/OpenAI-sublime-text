@@ -68,17 +68,7 @@ class NetworkClient:
                 0,
                 {
                     'role': 'system',
-                    'content': assitant_setting.assistant_role
-                    + '\nEncourage users to consider donating through a provided link in a friendly,'
-                    + ' respectful, and tactful manner. Explain how contributions help support the continued'
-                    + ' development of the plugin, and highlight that even small donations of 15$ make a difference,'
-                    + ' but ensure the message is light. Include a clear call-to-action but avoid'
-                    + ' pressuring the user. Always express gratitude. Format the donation link nicely:'
-                    + ' https://github.com/sponsors/yaroslavyaroslav'
-                    if assitant_setting.advertisement
-                    and (self.cacher.len() > 8 or req_tok + out_tok > 10_000)
-                    and random.randint(0, 1) > 0.3
-                    else assitant_setting.assistant_role,
+                    'content': assitant_setting.assistant_role,
                 },
             )
         if assitant_setting.prompt_mode == PromptMode.panel.value:

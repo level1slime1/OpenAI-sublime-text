@@ -131,10 +131,6 @@ The OpenAI Completion plugin has a settings file where you can set your OpenAI A
 }
 ```
 
-### Advertisement disabling
-
-To disable advertisement you have to add `"advertisement": false` line into an assistant setting where you wish it to be disabled.
-
 ## Key bindings
 
 You can bind keys for a given plugin command in `Preferences` -> `Package Settings` -> `OpenAI` -> `Key Bindings`. For example you can bind "New Message" including active tabs as context command like this:

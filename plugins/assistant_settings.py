@@ -29,7 +29,6 @@ class AssistantSettings:
     presence_penalty: int | None
     placeholder: str | None
     stream: bool | None
-    advertisement: bool
 
 
 DEFAULT_ASSISTANT_SETTINGS: Dict[str, Any] = {
@@ -44,7 +43,6 @@ DEFAULT_ASSISTANT_SETTINGS: Dict[str, Any] = {
     'frequency_penalty': None,
     'presence_penalty': None,
     'stream': True,
-    'advertisement': True,
 }
 
 
