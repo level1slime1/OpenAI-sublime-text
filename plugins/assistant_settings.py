@@ -21,6 +21,7 @@ class AssistantSettings:
     token: str | None
     chat_model: str
     assistant_role: str | None
+    assistant_prefill: str | None
     temperature: int | None
     max_tokens: int | None
     max_completion_tokens: int | None
@@ -34,6 +35,7 @@ class AssistantSettings:
 DEFAULT_ASSISTANT_SETTINGS: Dict[str, Any] = {
     'placeholder': None,
     'assistant_role': None,
+    'assistant_prefill': None,
     'url': None,
     'token': None,
     'temperature': None,

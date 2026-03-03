@@ -92,6 +92,7 @@
             // like as a code assistant. With this setting you're able to set it up more precisely.
             // E.g. "You are (rust|python|js|whatever) developer assistant", "You are an english tutor" and so on.
             "assistant_role": "You are a senior code assistant", // **REQUIRED**
+            "assistant_prefill": "", // Optional
 
             // URL for OpenAI alike API.
             // It must start with `http://` or `https://`, which selects protocol for connection. Use `http://` when using localhost.

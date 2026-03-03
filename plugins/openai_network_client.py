@@ -64,6 +64,14 @@ class NetworkClient:
         internal_messages: List[Dict[str, str]] = []
         if assitant_setting.assistant_role:
             req_tok, out_tok = self.cacher.read_tokens_count()
+            if assitant_setting.assistant_prefill:
+                internal_messages.insert(
+                0,
+                    {
+                        'role': 'assistant',
+                        'content': assitant_setting.assistant_prefill,
+                    },
+                )
             internal_messages.insert(
                 0,
                 {
