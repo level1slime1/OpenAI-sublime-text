@@ -6,7 +6,6 @@ from typing import List
 import re
 
 import mdpopups
-from llm_runner import InputKind, SublimeInputContent, write_to_cache  # type: ignore
 from sublime import (
     NewFileFlags,
     Phantom,
@@ -19,11 +18,6 @@ from sublime import (
     set_timeout,
 )
 
-from .load_model import get_cache_path
-from .output_panel import SharedOutputPanelListener
-from .response_manager import ResponseManager
-from .utils import extract_code_blocks
-
 OPENAI_COMPLETION_KEY = 'openai_completion'
 PHANTOM_TEMPLATE = (
     '---'
@@ -33,29 +27,39 @@ PHANTOM_TEMPLATE = (
     | <a href="copy">Copy</a> \
     | <a href="append">Append</a> \
     | <a href="replace">Replace</a> \
-    | <a href="new_file">In New Tab</a> \
-    | <a href="history">Add to History</a>'
+    | <a href="new_file">In New Tab</a>'
     + '\n\n{streaming_content}'
 )
 CLASS_NAME = 'openai-completion-phantom'
 
 logger = logging.getLogger(__name__)
 
+def extract_code_blocks(md_text: str) -> str:
+    """
+    Return a list of the contents of each ```…``` code block in the given markdown. The code blocks must extend over multiple lines to be selected
+    """
+    # compile once
+    pattern = re.compile(r'```(?:[^\n`]*)\n([\s\S]*?)```')
+
+    # Remove all inline blocks that the model may generate (i.e. code blocks that are inline with the text or that are single line)
+    filtered = re.sub(r'```([^\n]*?)```', '', md_text)
+
+    # Get all the code blocks from the AI completion
+    blocks = pattern.findall(filtered)
+    # Join all code blocks in a string
+    completion_code = '\n\n'.join(blocks)
+    return completion_code
 
 class PhantomStreamer:
-    user_input: List[SublimeInputContent]
-
     def __init__(
         self,
         view: View,
-        user_input: List[SublimeInputContent],
     ) -> None:
         self.view = view
         self.phantom_set = PhantomSet(self.view, OPENAI_COMPLETION_KEY)
         self.completion: str = ''
         self.phantom: Phantom | None = None
         self.phantom_id: int | None = None
-        self.user_input = user_input
         self.is_discardable: bool = (
             load_settings('openAI.sublime-settings')
             .get('chat_presentation', {})
@@ -136,24 +140,6 @@ class PhantomStreamer:
                 logger.debug(f'self.is_discardable: {self.is_discardable}')
                 new_tab.set_scratch(self.is_discardable)
                 new_tab.run_command('text_stream_at', {'position': 0, 'text': self.completion_code})
-            elif attribute == PhantomActions.history.value:
-                assitant_content = SublimeInputContent(InputKind.AssistantResponse, self.completion)
-
-                window = self.view.window() or active_window()
-
-                path = get_cache_path(self.view)
-
-                listner = SharedOutputPanelListener()
-
-                ResponseManager.print_requests(listner, window, self.user_input)
-
-                ResponseManager.prepare_to_response(listner, window)
-                ResponseManager.update_output_panel_(listner, window, assitant_content.content)
-
-                self.user_input.append(assitant_content)
-
-                [write_to_cache(path, item) for item in self.user_input if item.input_kind != InputKind.Sheet]
-
             elif attribute == PhantomActions.close.value:
                 pass
 
@@ -214,6 +200,5 @@ class PhantomActions(Enum):
     append = 'append'
     replace = 'replace'
     new_file = 'new_file'
-    history = 'history'
     show_thoughts = 'show_thoughts'
     hide_thoughts = 'hide_thoughts'
