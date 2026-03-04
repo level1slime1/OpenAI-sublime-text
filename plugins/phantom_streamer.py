@@ -93,6 +93,8 @@ class PhantomStreamer:
 
     def update_completion(self, completion: str):
         """Update the completion and the phantom"""
+        if not completion:
+            return
         self.completion += completion
         self.update_phantom(self.completion)
 
