@@ -413,24 +413,23 @@ class OpenAIWorker(Thread):
             messages.append(
                 {
                     'role': 'system',
-                    'content': f'placeholder: {placeholder}',
-                    'name': 'OpenAI_completion',
+                    'content': f'placeholder: {placeholder}'
                 }
             )
         if selected_text:
             messages.extend(
-                [{'role': 'user', 'content': text, 'name': 'OpenAI_completion'} for text in selected_text]
+                [{'role': 'user', 'content': text} for text in selected_text]
             )
         if command:
-            messages.append({'role': 'user', 'content': command, 'name': 'OpenAI_completion'})
+            messages.append({'role': 'user', 'content': command})
         return messages
 
     def create_image_fake_message(self, image_url: str | None, command: str | None) -> List[Dict[str, str]]:
         messages = []
         if image_url:
-            messages.append({'role': 'user', 'content': command, 'name': 'OpenAI_completion'})
+            messages.append({'role': 'user', 'content': command})
         if image_url:
-            messages.append({'role': 'user', 'content': image_url, 'name': 'OpenAI_completion'})
+            messages.append({'role': 'user', 'content': image_url})
         return messages
 
     def encode_image(self, image_path: str) -> str:
@@ -465,7 +464,6 @@ class OpenAIWorker(Thread):
                         {'type': 'text', 'text': command},
                         *image_data_list,  # Add all the image data
                     ],
-                    'name': 'OpenAI_completion',
                 }
             )
 
