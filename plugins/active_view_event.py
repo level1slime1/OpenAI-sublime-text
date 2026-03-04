@@ -69,10 +69,10 @@ class ActiveViewEventListener(EventListener):
             for key in ['name', 'prompt_mode', 'chat_model']:
                 lookup_key = key if key != 'name' else 'name_'  # name is a reserved keyword
                 if StatusBarMode[lookup_key].value in status_hint_options:
-                    if key == 'chat_model':
-                        statuses.append(assistant[key].upper())
-                    else:
+                    if key == 'prompt_mode':
                         statuses.append(assistant[key].title())
+                    else:
+                        statuses.append(assistant[key])
 
             if statuses:
                 status = f'[{" | ".join(statuses)}]'
