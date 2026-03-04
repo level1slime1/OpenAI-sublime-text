@@ -88,22 +88,22 @@ class NetworkClient:
         prompt_tokens_amount = self.calculate_prompt_tokens(internal_messages)
         self.cacher.append_tokens_count(data={'prompt_tokens': prompt_tokens_amount})
 
-        return json.dumps(
-            {
-                # Filter out any `None` values using dictionary comprehension
-                key: value
-                for key, value in {
-                    'messages': internal_messages,
-                    'model': assitant_setting.chat_model,
-                    'temperature': assitant_setting.temperature,
-                    'max_tokens': assitant_setting.max_tokens,
-                    'max_completion_tokens': assitant_setting.max_completion_tokens,
-                    'top_p': assitant_setting.top_p,
-                    'stream': assitant_setting.stream,
-                }.items()
-                if value is not None
-            }
-        )
+        payload = {
+            # Filter out any `None` values using dictionary comprehension
+            key: value
+            for key, value in {
+                'messages': internal_messages,
+                'model': assitant_setting.chat_model,
+                'temperature': assitant_setting.temperature,
+                'max_tokens': assitant_setting.max_tokens,
+                'max_completion_tokens': assitant_setting.max_completion_tokens,
+                'top_p': assitant_setting.top_p,
+                'stream': assitant_setting.stream,
+            }.items()
+            if value is not None
+        }
+        logger.debug('Prepared request: %s', json.dumps(payload, indent=2))
+        return json.dumps(payload)
 
     def prepare_request(self, json_payload: str):
         self.connection.request(method='POST', url=self.path, body=json_payload, headers=self.headers)
