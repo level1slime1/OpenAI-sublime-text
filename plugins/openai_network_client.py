@@ -63,27 +63,20 @@ class NetworkClient:
     def prepare_payload(self, assitant_setting: AssistantSettings, messages: List[Dict[str, str]]) -> str:
         internal_messages: List[Dict[str, str]] = []
         if assitant_setting.assistant_role:
-            req_tok, out_tok = self.cacher.read_tokens_count()
-            if assitant_setting.assistant_prefill:
-                internal_messages.insert(
-                0,
-                    {
-                        'role': 'assistant',
-                        'content': assitant_setting.assistant_prefill,
-                    },
-                )
-            internal_messages.insert(
-                0,
-                {
-                    'role': 'system',
-                    'content': assitant_setting.assistant_role,
-                },
-            )
+            internal_messages.append({
+                'role': 'system',
+                'content': assitant_setting.assistant_role,
+            })
         if assitant_setting.prompt_mode == PromptMode.panel.value:
             ## FIXME: This is error prone and should be rewritten
             #  Messages shouldn't be written in cache and passing as an attribute, should use either one.
             internal_messages += self.cacher.read_all()
         internal_messages += messages
+        if assitant_setting.assistant_prefill:
+            internal_messages.append({
+                'role': 'assistant',
+                'content': assitant_setting.assistant_prefill,
+            })
 
         prompt_tokens_amount = self.calculate_prompt_tokens(internal_messages)
         self.cacher.append_tokens_count(data={'prompt_tokens': prompt_tokens_amount})
